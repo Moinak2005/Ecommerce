@@ -1,0 +1,227 @@
+{% extends 'app.html' %}
+{% load static %}
+
+{% block content %}
+<section class="py-5 bg-light mt-5">
+  <div class="container-lg">
+    <div class="row justify-content-center">
+      <div class="col-lg-10 col-md-12">
+        <div class="card border-0 shadow-sm rounded-4">
+          <div class="card-body p-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-primary m-0">My Orders</h2>
+                <a href="{% url 'account' %}" class="btn btn-outline-secondary rounded-pill">Back to Account</a>
+            </div>
+            
+            {% if orders %}
+                <style>
+                    .clickable-row {
+                        cursor: pointer;
+                        transition: background-color 0.2s;
+                    }
+                    .clickable-row:hover {
+                        background-color: #f8f9fa !important;
+                    }
+                </style>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Order ID</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Total</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr class="clickable-row" data-bs-toggle="modal" data-bs-target="#orderModal{{ order.id }}" title="Click to view details">
+                                <td>
+                                    <strong>#{{ order.id }}</strong>
+                                    {% if order.transaction_id %}
+                                    <div class="text-muted" style="font-size: 0.8rem;">Trans: {{ order.transaction_id }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>{{ order.date_ordered|date:"M d, Y" }}</td>
+                                <td><strong>₹{{ order.get_cart_total|floatformat:2 }}</strong></td>
+                                <td>
+                                    {% if order.status == 'Pending' %}
+                                        <span class="badge bg-warning text-dark rounded-pill px-3 py-2">Pending</span>
+                                    {% elif order.status == 'Processing' %}
+                                        <span class="badge bg-info text-dark rounded-pill px-3 py-2">Processing</span>
+                                    {% elif order.status == 'Shipped' %}
+                                        <span class="badge bg-primary rounded-pill px-3 py-2">Shipped</span>
+                                    {% elif order.status == 'Delivered' %}
+                                        <span class="badge bg-success rounded-pill px-3 py-2">Delivered</span>
+                                    {% elif order.status == 'Cancelled' %}
+                                        <span class="badge bg-danger rounded-pill px-3 py-2">Cancelled</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary rounded-pill px-3 py-2">{{ order.status }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+
+                            <!-- Modal for Order {{ order.id }} -->
+                            <div class="modal fade" id="orderModal{{ order.id }}" tabindex="-1" aria-labelledby="orderModalLabel{{ order.id }}" aria-hidden="true">
+                              <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content rounded-4 border-0 shadow">
+                                  <div class="modal-header border-bottom-0 pb-0 mt-2">
+                                    <h5 class="modal-title fw-bold ms-2" id="orderModalLabel{{ order.id }}">Order #{{ order.id }}</h5>
+                                    <button type="button" class="btn-close me-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                                  </div>
+                                  <div class="modal-body px-4">
+                                    {% if order.transaction_id %}
+                                    <p class="text-muted small mb-3">Transaction ID: {{ order.transaction_id }}</p>
+                                    {% endif %}
+                                    
+                                    <!-- Tracking Progress Bar -->
+                                    <div class="mb-4 p-3">
+                                        <style>
+                                            .stepper-wrapper {
+                                              margin-top: 10px;
+                                              display: flex;
+                                              justify-content: space-between;
+                                              margin-bottom: 20px;
+                                              position: relative;
+                                            }
+                                            .stepper-wrapper::before {
+                                                content: "";
+                                                position: absolute;
+                                                top: 13px;
+                                                left: 10%;
+                                                width: 80%;
+                                                height: 4px;
+                                                background-color: #e0e0e0;
+                                                z-index: 1;
+                                            }
+                                            .step-progress-bar {
+                                                position: absolute;
+                                                top: 13px;
+                                                left: 10%;
+                                                height: 4px;
+                                                background-color: #0d6efd;
+                                                z-index: 2;
+                                                transition: width 0.4s ease;
+                                            }
+                                            .stepper-item {
+                                              position: relative;
+                                              display: flex;
+                                              flex-direction: column;
+                                              align-items: center;
+                                              flex: 1;
+                                              z-index: 3;
+                                            }
+                                            .stepper-item .step-counter {
+                                              position: relative;
+                                              width: 30px;
+                                              height: 30px;
+                                              border-radius: 50%;
+                                              background-color: #e0e0e0;
+                                              display: flex;
+                                              justify-content: center;
+                                              align-items: center;
+                                              margin-bottom: 10px;
+                                              color: white;
+                                              font-size: 16px;
+                                            }
+                                            .stepper-item.completed .step-counter {
+                                              background-color: #0d6efd;
+                                            }
+                                            .stepper-item.completed .step-counter::after {
+                                                content: "¹3";
+                                            }
+                                            .stepper-item .step-name {
+                                              font-size: 13px;
+                                              font-weight: 600;
+                                              color: #6c757d;
+                                            }
+                                            .stepper-item.completed .step-name {
+                                              color: #212529;
+                                            }
+                                        </style>
+                                        
+                                        {% if order.status != 'Cancelled' %}
+                                        <div class="stepper-wrapper">
+                                            {% if order.status == 'Pending' %}
+                                                <div class="step-progress-bar" style="width: 0%"></div>
+                                            {% elif order.status == 'Processing' %}
+                                                <div class="step-progress-bar" style="width: 33%"></div>
+                                            {% elif order.status == 'Shipped' %}
+                                                <div class="step-progress-bar" style="width: 66%"></div>
+                                            {% elif order.status == 'Delivered' %}
+                                                <div class="step-progress-bar" style="width: 100%"></div>
+                                            {% endif %}
+                                        
+                                            <div class="stepper-item completed">
+                                                <div class="step-counter"></div>
+                                                <div class="step-name">Pending</div>
+                                            </div>
+                                            
+                                            <div class="stepper-item {% if order.status == 'Processing' or order.status == 'Shipped' or order.status == 'Delivered' %}completed{% endif %}">
+                                                <div class="step-counter"></div>
+                                                <div class="step-name">Processing</div>
+                                            </div>
+                                            
+                                            <div class="stepper-item {% if order.status == 'Shipped' or order.status == 'Delivered' %}completed{% endif %}">
+                                                <div class="step-counter"></div>
+                                                <div class="step-name">Shipped</div>
+                                            </div>
+                                            
+                                            <div class="stepper-item {% if order.status == 'Delivered' %}completed{% endif %}">
+                                                <div class="step-counter"></div>
+                                                <div class="step-name">Delivered</div>
+                                            </div>
+                                        </div>
+                                        {% else %}
+                                        <div class="alert alert-danger text-center fw-bold">
+                                            This order has been cancelled.
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <!-- Items List -->
+                                    <h6 class="mb-2 fw-bold">Items Ordered:</h6>
+                                    <ul class="list-group list-group-flush mb-3">
+                                        {% for item in order.orderitem_set.all %}
+                                            <li class="list-group-item d-flex justify-content-between align-items-center px-0 border-light">
+                                                <div>
+                                                    <span class="badge bg-secondary me-2">{{ item.quantity }}x</span> 
+                                                    {{ item.product.name }}
+                                                </div>
+                                                <span>₹{{ item.get_total|floatformat:2 }}</span>
+                                            </li>
+                                        {% empty %}
+                                            <li class="list-group-item px-0 text-muted border-light">No items found</li>
+                                        {% endfor %}
+                                    </ul>
+                                    
+                                    <!-- Total -->
+                                    <div class="d-flex justify-content-between align-items-center fw-bold fs-5 mt-4 pt-3 border-top border-light">
+                                        <span>Total Amount:</span>
+                                        <span>₹{{ order.get_cart_total|floatformat:2 }}</span>
+                                    </div>
+                                  </div>
+                                  <div class="modal-footer border-top-0 pt-0 pb-3">
+                                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <svg width="64" height="64" class="text-muted mb-3"><use xlink:href="#package"></use></svg>
+                    <h5 class="text-muted">You have no completed orders yet.</h5>
+                    <a href="{% url 'shop' %}" class="btn btn-primary rounded-pill mt-3 px-4 py-2">Start Shopping</a>
+                </div>
+            {% endif %}
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}

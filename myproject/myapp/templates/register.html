@@ -1,0 +1,258 @@
+{% extends 'app.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  .form-control.is-invalid {
+    background-image: none !important;
+    padding-right: 1rem !important;
+  }
+  .position-relative .form-control {
+    padding-right: 3rem !important;
+  }
+</style>
+<section class="py-5 bg-light mt-5">
+  <div class="container-lg">
+    <div class="row justify-content-center">
+      <div class="col-lg-5 col-md-7 col-sm-9">
+        <div class="card border-0 shadow-sm rounded-4">
+          <div class="card-body p-5">
+            <h2 class="text-center mb-4 text-primary">Create an Account</h2>
+            
+
+
+            <form method="post" action="{% url 'register' %}" novalidate id="registerForm">
+              {% csrf_token %}
+              
+              {% for field in form %}
+                <div class="mb-3">
+                  <label for="{{ field.id_for_label }}" class="form-label">
+                    {{ field.label }} {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                  </label>
+                  {% if field.name == 'password1' or field.name == 'password2' %}
+                  <div class="position-relative">
+                    <input type="password" name="{{ field.name }}" class="form-control rounded-pill px-4 py-2 pe-5 {% if field.errors %}is-invalid{% endif %}" id="{{ field.id_for_label }}" {% if field.field.required %}required{% endif %}>
+                    <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y pe-3 text-muted toggle-password" data-target="{{ field.id_for_label }}" tabindex="-1" style="text-decoration:none;z-index:5;">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="eye-icon" viewBox="0 0 16 16">
+                        <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                        <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                      </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="eye-slash-icon d-none" viewBox="0 0 16 16">
+                        <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7 7 0 0 0 2.79-.588M5.21 3.088A7 7 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474z"/>
+                        <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12z"/>
+                      </svg>
+                    </button>
+                  </div>
+                  {% else %}
+                  <input type="{{ field.field.widget.input_type|default:'text' }}" name="{{ field.name }}" class="form-control rounded-pill px-4 py-2 {% if field.errors %}is-invalid{% endif %}" id="{{ field.id_for_label }}" {% if field.field.required %}required{% endif %}>
+                  {% endif %}
+                  {% for error in field.errors %}
+                    <div class="invalid-feedback ms-3">{{ error }}</div>
+                  {% endfor %}
+                </div>
+              {% endfor %}
+
+              <div class="d-grid mb-4 mt-4">
+                <button type="submit" class="btn btn-primary text-uppercase fs-6 rounded-pill py-3">Sign Up</button>
+              </div>
+
+              <div class="text-center">
+                <p class="mb-0">Already have an account? <a href="{% url 'login' %}" class="text-primary fw-bold">Log In</a></p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('registerForm');
+    const inputs = form.querySelectorAll('input:not([type="hidden"])');
+    
+    inputs.forEach(input => {
+        input.addEventListener('blur', function () {
+            validateField(this);
+        });
+        input.addEventListener('input', function () {
+            validateField(this);
+        });
+    });
+
+    form.addEventListener('submit', function (event) {
+        let isValid = true;
+        inputs.forEach(input => {
+            if (!validateField(input)) {
+                isValid = false;
+            }
+        });
+
+        if (!isValid) {
+            event.preventDefault();
+        }
+    });
+
+    function validateField(input) {
+        let errorMsg = '';
+        let isValid = true;
+        const name = input.name;
+        
+        if (input.required && !input.value.trim()) {
+            errorMsg = 'Please fill out this field.';
+            isValid = false;
+        } else if (input.value) {
+            if (name === 'username') {
+                const pattern = /^[\w.@+-]+$/;
+                if (input.value.length > 150) {
+                    errorMsg = 'Username must be 150 characters or fewer.';
+                    isValid = false;
+                } else if (!pattern.test(input.value)) {
+                    errorMsg = 'Username can only contain letters, digits and @/./+/-/_ characters.';
+                    isValid = false;
+                }
+            } else if (name === 'password1') {
+                if (input.value.length < 8) {
+                    errorMsg = 'Password must be at least 8 characters long.';
+                    isValid = false;
+                } else if (!/[A-Z]/.test(input.value)) {
+                    errorMsg = 'Password must contain at least one uppercase letter.';
+                    isValid = false;
+                } else if (!/[a-z]/.test(input.value)) {
+                    errorMsg = 'Password must contain at least one lowercase letter.';
+                    isValid = false;
+                } else if (!/[0-9]/.test(input.value)) {
+                    errorMsg = 'Password must contain at least one digit.';
+                    isValid = false;
+                } else if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(input.value)) {
+                    errorMsg = 'Password must contain at least one special character (!@#$%^&* etc).';
+                    isValid = false;
+                }
+                // Also re-validate confirmation if it has a value
+                const confirm = form.querySelector('[name="password2"]');
+                if (confirm && confirm.value) {
+                    validateField(confirm);
+                }
+            } else if (name === 'password2') {
+                const pass1 = form.querySelector('[name="password1"]');
+                if (pass1 && input.value !== pass1.value) {
+                    errorMsg = 'Passwords do not match.';
+                    isValid = false;
+                }
+            } else if (name === 'email') {
+                const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!pattern.test(input.value)) {
+                    errorMsg = 'Please enter a valid email address.';
+                    isValid = false;
+                }
+            }
+        }
+        
+        if (!isValid) {
+            showError(input, errorMsg);
+        } else {
+            clearError(input);
+        }
+        
+        return isValid;
+    }
+
+    function getContainer(input) {
+        // For password fields wrapped in position-relative, go up to the mb-3 div
+        let container = input.parentNode;
+        if (container.classList.contains('position-relative')) {
+            container = container.parentNode;
+        }
+        return container;
+    }
+
+    function showError(input, message) {
+        input.classList.add('is-invalid');
+        const container = getContainer(input);
+        let feedback = container.querySelector('.client-invalid-feedback');
+        if (!feedback) {
+            feedback = document.createElement('div');
+            feedback.className = 'client-invalid-feedback text-danger ms-3 mt-1 small';
+            container.appendChild(feedback);
+        }
+        feedback.textContent = message;
+        feedback.style.display = 'block';
+    }
+
+    function clearError(input) {
+        input.classList.remove('is-invalid');
+        const container = getContainer(input);
+        let feedback = container.querySelector('.client-invalid-feedback');
+        if (feedback) {
+            feedback.remove();
+        }
+        // Hide server errors if they start typing correctly
+        let serverFeedback = container.querySelector('.invalid-feedback:not(.client-invalid-feedback)');
+        if (serverFeedback) {
+            serverFeedback.style.display = 'none';
+        }
+        let serverHelp = container.querySelector('.form-text.text-danger');
+        if (serverHelp) {
+            serverHelp.style.display = 'none';
+        }
+    }
+});
+
+// Toggle password visibility
+document.querySelectorAll('.toggle-password').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+        const targetId = this.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        const eyeIcon = this.querySelector('.eye-icon');
+        const eyeSlashIcon = this.querySelector('.eye-slash-icon');
+        if (input.type === 'password') {
+            input.type = 'text';
+            eyeIcon.classList.add('d-none');
+            eyeSlashIcon.classList.remove('d-none');
+        } else {
+            input.type = 'password';
+            eyeIcon.classList.remove('d-none');
+            eyeSlashIcon.classList.add('d-none');
+        }
+    });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const fullName = urlParams.get('name');
+    const email = urlParams.get('email');
+    
+    if (email) {
+        const emailField = document.getElementById('id_email');
+        if (emailField) {
+            emailField.value = email;
+            // Optionally trigger input event for validation
+            emailField.dispatchEvent(new Event('input'));
+        }
+    }
+    
+    if (fullName) {
+        const nameParts = fullName.trim().split(/\s+/);
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || ''; // Everything else is last name
+        
+        const firstNameField = document.getElementById('id_first_name');
+        const lastNameField = document.getElementById('id_last_name');
+        
+        if (firstNameField && firstName) {
+            firstNameField.value = firstName;
+            firstNameField.dispatchEvent(new Event('input'));
+        }
+        if (lastNameField && lastName) {
+            lastNameField.value = lastName;
+            lastNameField.dispatchEvent(new Event('input'));
+        }
+    }
+});
+</script>
+
+{% endblock content %}
+

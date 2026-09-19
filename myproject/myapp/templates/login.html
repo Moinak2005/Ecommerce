@@ -1,0 +1,86 @@
+{% extends 'app.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  .form-control.is-invalid {
+    background-image: none !important;
+    padding-right: 1rem !important;
+  }
+  .position-relative .form-control {
+    padding-right: 3rem !important;
+  }
+</style>
+<section class="py-5 bg-light mt-5">
+  <div class="container-lg">
+    <div class="row justify-content-center">
+      <div class="col-lg-5 col-md-7 col-sm-9">
+        <div class="card border-0 shadow-sm rounded-4">
+          <div class="card-body p-5">
+            <h2 class="text-center mb-4 text-primary">Welcome Back</h2>
+            
+
+
+            <form method="post" action="{% url 'login' %}">
+              {% csrf_token %}
+              
+              <div class="mb-3">
+                <label for="id_username" class="form-label">Username or Email <span class="text-danger">*</span></label>
+                <input type="text" name="username" class="form-control rounded-pill px-4 py-2" id="id_username" placeholder="Enter your username or email" required>
+              </div>
+              
+              <div class="mb-4">
+                <label for="id_password" class="form-label">Password <span class="text-danger">*</span></label>
+                <div class="position-relative">
+                  <input type="password" name="password" class="form-control rounded-pill px-4 py-2 pe-5" id="id_password" placeholder="Enter your password" required>
+                  <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y pe-3 text-muted toggle-password" data-target="id_password" tabindex="-1" style="text-decoration:none;z-index:5;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="eye-icon" viewBox="0 0 16 16">
+                      <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                      <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="eye-slash-icon d-none" viewBox="0 0 16 16">
+                      <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7 7 0 0 0 2.79-.588M5.21 3.088A7 7 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474z"/>
+                      <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12z"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="d-grid mb-4">
+                <button type="submit" class="btn btn-primary text-uppercase fs-6 rounded-pill py-3">Log In</button>
+              </div>
+
+              <div class="text-center">
+                <p class="mb-0">Don't have an account? <a href="{% url 'register' %}" class="text-primary fw-bold">Sign Up</a></p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.toggle-password').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const targetId = this.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            const eyeIcon = this.querySelector('.eye-icon');
+            const eyeSlashIcon = this.querySelector('.eye-slash-icon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                eyeIcon.classList.add('d-none');
+                eyeSlashIcon.classList.remove('d-none');
+            } else {
+                input.type = 'password';
+                eyeIcon.classList.remove('d-none');
+                eyeSlashIcon.classList.add('d-none');
+            }
+        });
+    });
+});
+</script>
+{% endblock content %}
+

@@ -1,0 +1,53 @@
+{% extends 'app.html' %}
+{% load static %}
+{% block content %}
+<section class="py-5 mb-5" style="background: url('{% static 'assets/images/banner-ad-1.jpg' %}') no-repeat; background-size: cover; background-position: center;">
+  <div class="container-lg">
+    <div class="row justify-content-center">
+      <div class="col-md-8 text-center text-white">
+        <h1 class="display-2 fw-bold text-white">About Us</h1>
+        <p class="fs-4">We are dedicated to bringing you the freshest organic foods.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container-lg">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <img src="{% static 'assets/images/sample-image.jpg' %}" alt="About us" class="img-fluid rounded-4">
+      </div>
+      <div class="col-md-6 mt-4 mt-md-0">
+        <h2 class="display-5 fw-bold mb-4">Our Story</h2>
+        <p class="fs-5">Dignissim massa diam elementum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.</p>
+        <p class="text-muted">We started as a small family farm and have grown into a community of passionate organic food lovers. Our mission is to provide healthy, sustainable food options to everyone.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-light mt-5">
+  <div class="container-lg">
+    <h2 class="text-center mb-5">Our Team</h2>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+      <div class="col text-center">
+        <img src="{% static 'assets/images/reviewer-1.jpg' %}" class="rounded-circle mb-3" alt="Team member">
+        <h5>John Doe</h5>
+        <p class="text-muted">Founder & CEO</p>
+      </div>
+      <div class="col text-center">
+        <img src="{% static 'assets/images/reviewer-2.jpg' %}" class="rounded-circle mb-3" alt="Team member">
+        <h5>Jane Smith</h5>
+        <p class="text-muted">Store Manager</p>
+      </div>
+      <div class="col text-center">
+        <img src="{% static 'assets/images/reviewer-3.jpg' %}" class="rounded-circle mb-3" alt="Team member">
+        <h5>Mike Johnson</h5>
+        <p class="text-muted">Head Baker</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}
+

@@ -1,0 +1,69 @@
+{% extends 'app.html' %}
+{% load static %}
+{% block content %}
+<section class="py-5 mb-5" style="background: url('{% static 'assets/images/banner-ad-3.jpg' %}') no-repeat; background-size: cover; background-position: center;">
+  <div class="container-lg">
+    <div class="row justify-content-center">
+      <div class="col-md-8 text-center text-white">
+        <h1 class="display-2 fw-bold text-white">Contact Us</h1>
+        <p class="fs-4">We'd love to hear from you!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-md-4 mb-4 mb-md-0">
+        <div class="card border-0 bg-light rounded-4 p-4 text-center h-100">
+          <svg width="40" height="40" class="mb-3 text-primary mx-auto"><use xlink:href="#phone"></use></svg>
+          <h5>Phone</h5>
+          <p class="text-muted mb-0">+1 (234) 567-890</p>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4 mb-md-0">
+        <div class="card border-0 bg-light rounded-4 p-4 text-center h-100">
+          <svg width="40" height="40" class="mb-3 text-primary mx-auto"><use xlink:href="#email"></use></svg>
+          <h5>Email</h5>
+          <p class="text-muted mb-0">hello@organicstore.com</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 bg-light rounded-4 p-4 text-center h-100">
+          <svg width="40" height="40" class="mb-3 text-primary mx-auto"><use xlink:href="#location"></use></svg>
+          <h5>Location</h5>
+          <p class="text-muted mb-0">123 Organic Street, NY 10001</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row justify-content-center mt-5">
+      <div class="col-md-8">
+        <div class="bg-light rounded-4 py-5 px-4 px-md-5">
+          <form id="contactForm" data-sb-form-api-token="API_TOKEN">
+            <div class="form-floating mb-3">
+              <input class="form-control bg-white" id="name" type="text" placeholder="Enter your name..." data-sb-validations="required" />
+              <label for="name">Full name</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input class="form-control bg-white" id="email" type="email" placeholder="name@example.com" data-sb-validations="required,email" />
+              <label for="email">Email address</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input class="form-control bg-white" id="phone" type="tel" placeholder="(123) 456-7890" data-sb-validations="required" />
+              <label for="phone">Phone number</label>
+            </div>
+            <div class="form-floating mb-3">
+              <textarea class="form-control bg-white" id="message" type="text" placeholder="Enter your message here..." style="height: 10rem" data-sb-validations="required"></textarea>
+              <label for="message">Message</label>
+            </div>
+            <div class="d-grid"><button class="btn btn-primary btn-lg" id="submitButton" type="submit">Submit</button></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}
+

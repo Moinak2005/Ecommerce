@@ -86,13 +86,17 @@ def get_ai_stylist_recommendation(user_prompt: str, user=None, chat_history: lis
 
     history_contents = []
     if chat_history:
-        for msg in chat_history:
-            history_contents.append(
-                types.Content(
-                    role=msg['role'],
-                    parts=[types.Part.from_text(text=msg['text'])]
-                )
-            )
+        try:
+            for msg in chat_history:
+                if msg.get('role') and msg.get('text'):
+                    history_contents.append(
+                        types.Content(
+                            role=msg['role'],
+                            parts=[types.Part.from_text(text=msg['text'])]
+                        )
+                    )
+        except Exception:
+            history_contents = []
 
     kwargs = {
         'model': 'gemini-flash-lite-latest',
@@ -106,7 +110,29 @@ def get_ai_stylist_recommendation(user_prompt: str, user=None, chat_history: lis
     if history_contents:
         kwargs['history'] = history_contents
 
-    chat = client.chats.create(**kwargs)
-    
-    response = chat.send_message(user_prompt)
-    return response.text if response.text else "Action completed."
+    try:
+        chat = client.chats.create(**kwargs)
+        response = chat.send_message(user_prompt)
+        
+        # Try response.text first
+        if response.text:
+            return response.text
+        
+        # Fallback: extract text from response parts
+        if response.candidates:
+            for candidate in response.candidates:
+                if candidate.content and candidate.content.parts:
+                    text_parts = [p.text for p in candidate.content.parts if hasattr(p, 'text') and p.text]
+                    if text_parts:
+                        return '\n'.join(text_parts)
+        
+        return "I've completed the action. Is there anything else I can help you with?"
+    except Exception as e:
+        # If history causes issues, retry without it
+        if history_contents:
+            kwargs.pop('history', None)
+            chat = client.chats.create(**kwargs)
+            response = chat.send_message(user_prompt)
+            if response.text:
+                return response.text
+        raise e

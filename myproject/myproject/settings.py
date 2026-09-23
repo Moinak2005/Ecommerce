@@ -81,13 +81,17 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'MySQL80',
+    #     'USER': 'MoinakBanerjee',
+    #     'PASSWORD': os.environ.get('DB_PASSWORD', 'default_password'),   # Loaded from .env
+    #     'HOST': 'localhost',
+    #     'PORT': '3306',
+    # }
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'MySQL80',
-        'USER': 'MoinakBanerjee',
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'default_password'),   # Loaded from .env
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
